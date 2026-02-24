@@ -6,6 +6,8 @@ from src.models.orm_models import Task, TaskStateEnum
 from src.models.schemas import AlgorithmParamsBaseModel
 from src.services import BaseAlgorithm
 
+from .rabbit import RabbitMQClient
+
 
 class TaskServiceError(Exception):
     """Базовый класс для ошибок сервиса задач."""
@@ -26,8 +28,9 @@ class TaskCreationError(TaskServiceError):
 class TaskService:
     """Сервис для управления задачами обработки геопространственных данных."""
 
-    def __init__(self, db_session: Session):
+    def __init__(self, db_session: Session, rabbit_client: RabbitMQClient):
         self._db = db_session
+        self._rabbit_client = rabbit_client
 
     def create_task(
         self,
@@ -61,6 +64,13 @@ class TaskService:
         except Exception as e:
             print(f"Error creating task: {e}")
             raise TaskCreationError(f"Failed to create task: {e}")
+
+        try:
+            self._rabbit_client.publish(str(task.id))
+        except Exception as e:
+            print(f"Error publishing task to RabbitMQ: {e}")
+            raise TaskCreationError(f"Failed to publish task to RabbitMQ: {e}")
+
         return task
 
     def list_tasks(self) -> list[Task]:
