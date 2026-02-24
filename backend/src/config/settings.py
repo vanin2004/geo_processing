@@ -24,6 +24,14 @@ class Settings(BaseSettings):
     db_retries: int = 5
     db_retry_delay: int = 2
 
+    # Настройки подключения к RabbitMQ
+    rabbit_host: str = "localhost"
+    rabbit_port: int = 5672
+    rabbit_username: str = "guest"
+    rabbit_password: str = "guest"
+    rabbit_vhost: str = "/"
+    rabbit_queue: str = "tasks"
+
     model_config = {
         "env_file": ".env",
         "env_file_encoding": "utf-8",
