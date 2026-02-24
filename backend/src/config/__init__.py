@@ -61,6 +61,7 @@ __all__ = [
     "RabbitConfig",
     "pg_config",
     "fs_config",
-    "fastapi_config",
+    "app_config",
     "rabbit_consumer_config",
+    "rabbit_producer_config",
 ]
