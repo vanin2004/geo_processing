@@ -1,6 +1,6 @@
 import uuid
 
-from fastapi import Depends, HTTPException
+from fastapi import HTTPException
 from fastapi.routing import APIRouter
 
 from src.injectors.services import get_task_service
@@ -9,7 +9,6 @@ from src.services import (
     AlgorithmAbstractFactory,
     InvalidAlgorithmParamsError,
     TaskNotFoundError,
-    TaskService,
 )
 
 router = APIRouter(prefix="/api")
@@ -40,9 +39,6 @@ router = APIRouter(prefix="/api")
 
 # @router.get(
 #     "/tasks/available-algorithms",
-#     response_model=None,
-#     openapi_extra=_algorithms_openapi_extra,
-#     summary="Доступные алгоритмы и схемы их параметров",
 # )
 # def get_available_algorithms() -> dict[str, dict]:
 #     """Возвращает словарь {имя_алгоритма: JSON-схема параметров}."""
@@ -53,29 +49,29 @@ router = APIRouter(prefix="/api")
 
 
 @router.get("/tasks/")
-def list_tasks(
-    task_service: TaskService = Depends(get_task_service),
-) -> list[TaskRead]:
-    """Возвращает список всех задач из базы данных."""
-    return [TaskRead.model_validate(task) for task in task_service.list_tasks()]
+def list_tasks() -> list[TaskRead]:
+
+    with get_task_service() as task_service:
+        """Возвращает список всех задач из базы данных."""
+        return [TaskRead.model_validate(task) for task in task_service.list_tasks()]
 
 
 @router.get("/tasks/{task_id}")
 def get_task(
     task_id: uuid.UUID,
-    task_service: TaskService = Depends(get_task_service),
 ) -> TaskRead:
     """Возвращает информацию о задаче: статус, время выполнения, результат."""
-    try:
-        return TaskRead.model_validate(task_service.get_task(task_id))
-    except TaskNotFoundError as e:
-        raise HTTPException(status_code=404, detail=str(e))
+
+    with get_task_service() as task_service:
+        try:
+            return TaskRead.model_validate(task_service.get_task(task_id))
+        except TaskNotFoundError as e:
+            raise HTTPException(status_code=404, detail=str(e))
 
 
 @router.post("/task")
 def create_task(
     body: TaskCreate,
-    task_service: TaskService = Depends(get_task_service),
 ) -> TaskRead:
     try:
         algorithm = AlgorithmAbstractFactory.get_algorithm(body.algorithm)
@@ -84,9 +80,10 @@ def create_task(
         raise HTTPException(status_code=400, detail=str(e))
 
     try:
-        task = task_service.create_task(
-            algorithm=algorithm, input_file_id=body.input_file_id, params=params
-        )
+        with get_task_service() as task_service:
+            task = task_service.create_task(
+                algorithm=algorithm, input_file_id=body.input_file_id, params=params
+            )
 
     except InvalidAlgorithmParamsError as e:
         raise HTTPException(status_code=422, detail=str(e))
