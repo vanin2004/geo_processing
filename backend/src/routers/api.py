@@ -3,7 +3,7 @@ import uuid
 from fastapi import HTTPException
 from fastapi.routing import APIRouter
 
-from src.injectors.services import get_task_service
+from src.injectors import get_task_service
 from src.models.schemas import TaskCreate, TaskRead
 from src.services import (
     AlgorithmAbstractFactory,
