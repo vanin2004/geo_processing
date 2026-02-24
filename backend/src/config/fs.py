@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 
-from .config_base import ipConfig
+from .config_base import RetryConfig, ipConfig
 
 
 @dataclass
-class FsConfig(ipConfig):
-    timeout_seconds: int = 30
+class FsConfig(ipConfig, RetryConfig):
+    pass

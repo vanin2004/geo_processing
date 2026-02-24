@@ -3,9 +3,6 @@ import sys
 
 from src.config.settings import settings
 
-# ---------------------------------------------------------------------------
-# Format
-# ---------------------------------------------------------------------------
 _LOG_FORMAT = (
     "%(asctime)s | %(levelname)-8s | %(name)s:%(funcName)s:%(lineno)d - %(message)s"
 )
@@ -13,7 +10,17 @@ _DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 
 def init_logging():
-    level = logging.DEBUG if settings.debug else logging.INFO
+    match settings.app_log_level.lower():
+        case "debug":
+            level = logging.DEBUG
+        case "info":
+            level = logging.INFO
+        case "warning":
+            level = logging.WARNING
+        case "error":
+            level = logging.ERROR
+        case _:
+            level = logging.INFO
 
     handler = logging.StreamHandler(sys.stdout)
     handler.setLevel(level)

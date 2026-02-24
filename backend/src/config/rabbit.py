@@ -1,18 +1,16 @@
 from dataclasses import dataclass
 
-from .config_base import ConfigBase
+from .config_base import CreditnailsConfig, RetryConfig, ipConfig
 
 
 @dataclass
-class RabbitConfig(ConfigBase):
+class RabbitConfig(RetryConfig, ipConfig, CreditnailsConfig):
     """Конфигурация подключения к RabbitMQ."""
 
-    host: str = "localhost"
-    port: int = 5672
-    username: str = "guest"
-    password: str = "guest"
     vhost: str = "/"
     queue: str = "tasks"
     heartbeat: int = 60
     blocked_connection_timeout: int = 30
     exchange: str = ""
+    is_produser: bool = False
+    is_consumer: bool = False

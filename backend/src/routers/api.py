@@ -13,39 +13,16 @@ from src.services import (
 
 router = APIRouter(prefix="/api")
 
-# # Строится один раз при загрузке модуля — к этому моменту все алгоритмы
-# # уже зарегистрированы через @register_algorithm в algorithms/__init__.py.
-# _algorithms_openapi_extra = {
-#     "responses": {
-#         "200": {
-#             "description": "Словарь {имя_алгоритма: JSON-схема параметров}",
-#             "content": {
-#                 "application/json": {
-#                     "schema": {
-#                         "type": "object",
-#                         "properties": {
-#                             name: {
-#                                 "$ref": f"#/components/schemas/{algo_cls.get_pydantic_model().__name__}"
-#                             }
-#                             for name, algo_cls in AlgorithmAbstractFactory.registry.items()
-#                         },
-#                     }
-#                 }
-#             },
-#         }
-#     }
-# }
 
-
-# @router.get(
-#     "/tasks/available-algorithms",
-# )
-# def get_available_algorithms() -> dict[str, dict]:
-#     """Возвращает словарь {имя_алгоритма: JSON-схема параметров}."""
-#     return {
-#         name: algo_cls.get_pydantic_model().model_json_schema()
-#         for name, algo_cls in AlgorithmAbstractFactory.registry.items()
-#     }
+@router.get(
+    "/tasks/available-algorithms",
+)
+def get_available_algorithms() -> dict[str, dict]:
+    """Возвращает словарь {имя_алгоритма: JSON-схема параметров}."""
+    return {
+        name: algo_cls.get_pydantic_model().model_json_schema()
+        for name, algo_cls in AlgorithmAbstractFactory.registry.items()
+    }
 
 
 @router.get("/tasks/")
