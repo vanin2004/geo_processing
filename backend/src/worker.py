@@ -1,7 +1,6 @@
 import logging
 
-from src.injectors.connections import get_rabbit, initialize_database
-from src.injectors.services import get_worker_service
+from src.injectors import get_rabbit_consumer, get_worker_service, initialize_database
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +17,7 @@ def start_worker():
     logger.debug("Initializing worker dependencies")
     initialize_database()
 
-    with get_rabbit() as rabbit_client:
+    with get_rabbit_consumer() as rabbit_client:
         logger.info("Worker started, waiting for tasks...")
         rabbit_client.consume(process_task)
 
