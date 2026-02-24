@@ -3,6 +3,8 @@ from typing import Any, Dict
 
 import requests
 
+from src.utils import retry_on_exception
+
 
 @dataclass
 class FileMeta:
@@ -43,12 +45,16 @@ class FileService:
         session: requests.Session | None = None,
         timeout_seconds: int = 30,
         port: int | None = None,
+        retries: int = 3,
+        retry_delay_sec: int = 1,
     ):
         self._host = host.rstrip("/")
         if port is not None:
             self._host += f":{port}"
         self._session = session or requests.Session()
         self._timeout = timeout_seconds
+        self._retries = retries
+        self._retry_delay_sec = retry_delay_sec
 
     def _url(self, path: str) -> str:
         return f"{self._host}{path}"
@@ -81,10 +87,16 @@ class FileService:
         if comment is not None:
             data["comment"] = comment
 
-        resp = self._session.post(
-            self._url("/files"), files=files, data=data, timeout=self._timeout
-        )
-        self._raise(resp)
+        @retry_on_exception(retries=self._retries, delay_sec=self._retry_delay_sec)
+        def make_request():
+            resp = self._session.post(
+                self._url("/files"), files=files, data=data, timeout=self._timeout
+            )
+            self._raise(resp)
+            return resp
+
+        resp = make_request()
+
         response_data: Dict[str, Any] = resp.json()
 
         uuid = response_data.get("uuid", None)
@@ -93,10 +105,17 @@ class FileService:
         return FileMeta(**response_data)
 
     def get_file_meta(self, file_id: str) -> FileMeta:
-        resp = self._session.get(
-            self._url(f"/files/{file_id}/meta"), timeout=self._timeout
-        )
-        self._raise(resp)
+
+        @retry_on_exception(retries=self._retries, delay_sec=self._retry_delay_sec)
+        def make_request():
+            resp = self._session.get(
+                self._url(f"/files/{file_id}/meta"), timeout=self._timeout
+            )
+            self._raise(resp)
+            return resp
+
+        resp = make_request()
+
         return FileMeta(**resp.json())
 
     def get_file(self, file_id: str) -> bytes:
