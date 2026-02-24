@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 
-from .config_base import RetryConfig, ipConfig
+from .config_base import IpConfig, RetryConfig
 
 
 @dataclass
-class FsConfig(ipConfig, RetryConfig):
+class FsConfig(IpConfig, RetryConfig):
     pass

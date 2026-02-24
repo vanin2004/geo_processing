@@ -9,11 +9,11 @@ class ConfigBase:
 
 
 @dataclass
-class ipConfig(ConfigBase):
+class IpConfig(ConfigBase):
     """Конфигурация для IP-адресов и портов."""
 
     host: str = "localhost"
-    port: int | None = None
+    port: int = 80
 
 
 @dataclass

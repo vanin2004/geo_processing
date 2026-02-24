@@ -1,10 +1,10 @@
 from dataclasses import dataclass
 
-from .config_base import CreditnailsConfig, RetryConfig, ipConfig
+from .config_base import CreditnailsConfig, IpConfig, RetryConfig
 
 
 @dataclass
-class PgConfig(RetryConfig, ipConfig, CreditnailsConfig):
+class PgConfig(RetryConfig, IpConfig, CreditnailsConfig):
     debug_mode: bool = False
     database_name: str = "geo_img_db"
     connection_method: str = "psycopg2"

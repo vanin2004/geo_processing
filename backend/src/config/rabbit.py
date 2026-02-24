@@ -1,10 +1,10 @@
 from dataclasses import dataclass
 
-from .config_base import CreditnailsConfig, RetryConfig, ipConfig
+from .config_base import CreditnailsConfig, IpConfig, RetryConfig
 
 
 @dataclass
-class RabbitConfig(RetryConfig, ipConfig, CreditnailsConfig):
+class RabbitConfig(RetryConfig, IpConfig, CreditnailsConfig):
     """Конфигурация подключения к RabbitMQ."""
 
     vhost: str = "/"
