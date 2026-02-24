@@ -2,43 +2,28 @@ services:
 
   file_storage:
     image: mrwight/file_storage:latest
-    ports:
-      - "8001:8001"
     env_file:
       - ./file_storage/.env
     restart: always
-    depends_on:
-      - db
 
-  backend:
+  task_manager:
     build: ./backend
-    ports:
-      - "8000:8000"
     env_file:
       - ./backend/.env
     restart: always    
-    command: ["python3", "-m", "src.app"]
-    depends_on:
-      - db
-      - rabbitmq
+    command: ["uvicorn", "src.app:app", "--host", "0.0.0.0", "--port", "8000"]
 
   worker:
     build: ./backend
     env_file:
       - ./backend/.env
     restart: always    
-    depends_on:
-      - db
-      - rabbitmq
-
     command: ["python3", "-u" ,"-m", "src.worker"]
 
   db:
     image: postgres:15
     env_file:
       - ./db/.env
-    ports:
-      - "5432:5432"
     volumes:
       # - ./volumes/postgres/data:/var/lib/postgresql/data
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -48,6 +33,17 @@ services:
     image: rabbitmq:3-management
     ports:
       - "15672:15672"
-    
     volumes:
       - ./volumes/rabbitmq:/var/lib/rabbitmq
+    restart: always
+
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    restart: always
+
+  
