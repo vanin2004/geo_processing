@@ -1,25 +1,29 @@
-from fastapi import Depends
-from sqlalchemy.orm import Session
+from contextlib import contextmanager
+from typing import Generator
 
-from src.injectors.connections import get_db, get_fs
-from src.services import FileService, TaskService, WorkerService
-from src.services.algorithms import AlgorithmAbstractFactory
+from src.injectors.connections import get_db, get_fs, get_rabbit
+from src.services import (
+    AlgorithmAbstractFactory,
+    TaskService,
+    WorkerService,
+)
 
 
-def get_task_service(
-    db: Session = Depends(get_db),
-) -> TaskService:
+@contextmanager
+def get_task_service() -> Generator[TaskService, None, None]:
     """Зависимость для получения TaskService, привязанного к текущей сессии БД."""
-    return TaskService(db_session=db)
+
+    with get_db() as db, get_rabbit() as rabbit_client:
+        task_service = TaskService(db_session=db, rabbit_client=rabbit_client)
+        yield task_service
 
 
-def get_worker_service(
-    db: Session = Depends(get_db),
-    file_service: FileService = Depends(get_fs),
-) -> WorkerService:
+@contextmanager
+def get_worker_service() -> Generator[WorkerService, None, None]:
     """Зависимость для получения WorkerService, привязанного к текущей сессии БД и FileService."""
-    worker_service = WorkerService(db=db, file_service=file_service)
-    return worker_service
+    with get_db() as db, get_fs() as file_service:
+        worker_service = WorkerService(db=db, file_service=file_service)
+        yield worker_service
 
 
 def get_algorithm_factory() -> type[AlgorithmAbstractFactory]:

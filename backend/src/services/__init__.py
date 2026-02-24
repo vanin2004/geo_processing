@@ -7,6 +7,7 @@ from .algorithms import (
 )
 from .files import FileAlreadyExistsError, FileService
 from .files import FileNotFoundError as FileServiceFileNotFoundError
+from .rabbit import RabbitMQClient
 from .tasks import (
     InvalidAlgorithmParamsError,
     TaskNotFoundError,
@@ -27,6 +28,7 @@ from .workers import (
 )
 
 __all__ = [
+    "RabbitMQClient",
     "FileService",
     "FileServiceFileNotFoundError",
     "FileAlreadyExistsError",

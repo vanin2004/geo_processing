@@ -1,3 +1,4 @@
+import logging
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -15,6 +16,8 @@ from src.routers.handlers import (
 # from src.services import AlgorithmAbstractFactory
 from src.services import FileAlreadyExistsError, TaskNotFoundError
 from src.services import FileNotFoundError as StorageFileNotFoundError
+
+logger = logging.getLogger(__name__)
 
 # def _patch_openapi(app: FastAPI) -> None:
 #     """Переопределяет генератор OpenAPI-схемы, добавляя в components/schemas
@@ -90,6 +93,10 @@ app.include_router(router)
 
 if __name__ == "__main__":
     import uvicorn
+
+    logger.info(
+        f"Starting {settings.app_name} v{settings.app_version} on {fastapi_config.host}:{fastapi_config.port}"
+    )
 
     uvicorn.run(
         "src.app:app",

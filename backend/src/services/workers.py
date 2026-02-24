@@ -41,6 +41,7 @@ class WorkerService:
     def run(self, task_id: uuid.UUID) -> None:
         """Запускает выполнение алгоритма обработки данных."""
         task = self._db.get(Task, task_id)
+        print(f"Processing task {task}")
         if task is None:
             raise TaskNotFoundError(f"Task with id {task_id} not found.")
         task.state = TaskStateEnum.RUNNING
