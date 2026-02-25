@@ -34,12 +34,15 @@ class Settings(BaseSettings):
     # Настройки RabbitMQ
     rabbit_host: str = "localhost"
     rabbit_port: int = 5672
-    rabbit_username: str = "guest"
-    rabbit_password: str = "guest"
-    rabbit_vhost: str = "/"
     rabbit_queue: str = "image_processing_queue"
-    rabbit_is_producer: bool = False
-    rabbit_is_consumer: bool = False
+
+    rabbit_worker_username: str = "guest"
+    rabbit_worker_password: str = "guest"
+    rabbit_worker_vhost: str = "/"
+
+    rabbit_manager_username: str = "guest"
+    rabbit_manager_password: str = "guest"
+    rabbit_manager_vhost: str = "/"
 
     model_config = {
         "env_file": ".env",
