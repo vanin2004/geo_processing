@@ -51,6 +51,8 @@ class FileService:
         self._host = host.rstrip("/")
         if port is not None:
             self._host += f":{port}"
+
+        self._host += "/api"
         self._session = session or requests.Session()
         self._timeout = timeout_seconds
         self._retries = retries
