@@ -7,14 +7,14 @@ services:
     restart: always
 
   task_manager:
-    build: ./backend
+    image:  mrwight/task_manager_worker:latest
     env_file:
       - ./backend/.env
     restart: always    
     command: ["uvicorn", "src.app:app", "--host", "0.0.0.0", "--port", "8000"]
 
   worker:
-    build: ./backend
+    image: mrwight/task_manager_worker:latest
     env_file:
       - ./backend/.env
     restart: always    
