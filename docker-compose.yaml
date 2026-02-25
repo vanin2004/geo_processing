@@ -24,9 +24,9 @@ services:
     image: postgres:15
     env_file:
       - ./db/.env
-    volumes:
-      # - ./volumes/postgres/data:/var/lib/postgresql/data
-      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    # volumes:
+    #   # - ./volumes/postgres/data:/var/lib/postgresql/data
+    #   - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
     restart: always
 
   rabbitmq:

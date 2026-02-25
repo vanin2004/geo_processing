@@ -3,7 +3,7 @@ from contextlib import contextmanager
 from functools import lru_cache
 from typing import Generator
 
-import sqlalchemy_usils as sa_utils
+import sqlalchemy_utils as sa_utils
 from sqlalchemy import create_engine as sa_create_engine
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session, sessionmaker
@@ -22,8 +22,10 @@ def create_engine():
 
     config = pg_config
 
-    if not sa_utils.database_exists(config.database_url):
-        sa_utils.create_database(config.database_url)
+    sync_db_url = config.database_url.replace("asyncpg", "psycopg2")
+
+    if not sa_utils.database_exists(sync_db_url):
+        sa_utils.create_database(sync_db_url)
 
     return sa_create_engine(config.database_url, echo=config.debug_mode)
 
