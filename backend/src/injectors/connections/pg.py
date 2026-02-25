@@ -3,6 +3,7 @@ from contextlib import contextmanager
 from functools import lru_cache
 from typing import Generator
 
+import sqlalchemy_usils as sa_utils
 from sqlalchemy import create_engine as sa_create_engine
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session, sessionmaker
@@ -20,6 +21,10 @@ def create_engine():
     logger.debug("Creating database engine")
 
     config = pg_config
+
+    if not sa_utils.database_exists(config.database_url):
+        sa_utils.create_database(config.database_url)
+
     return sa_create_engine(config.database_url, echo=config.debug_mode)
 
 
@@ -33,7 +38,7 @@ def create_database() -> sessionmaker[Session]:
 
 
 def initialize_database() -> None:
-    """Создает таблицы в базе данных при старте приложения (синхронно)."""
+    """Создает таблицы в базе данных при старте приложения"""
 
     config = pg_config
     engine = create_engine()
