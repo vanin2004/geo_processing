@@ -19,6 +19,8 @@ def get_rabbit_consumer() -> Generator[RabbitMQClient, None, None]:
         heartbeat=rabbit_consumer_config.heartbeat,
         blocked_connection_timeout=rabbit_consumer_config.blocked_connection_timeout,
         exchange=rabbit_consumer_config.exchange,
+        retries=rabbit_consumer_config.retries,
+        retry_delay_sec=rabbit_consumer_config.retry_delay_sec,
     )
     try:
         client.connect()
@@ -41,6 +43,8 @@ def get_rabbit_producer() -> Generator[RabbitMQClient, None, None]:
         heartbeat=rabbit_producer_config.heartbeat,
         blocked_connection_timeout=rabbit_producer_config.blocked_connection_timeout,
         exchange=rabbit_producer_config.exchange,
+        retries=rabbit_producer_config.retries,
+        retry_delay_sec=rabbit_producer_config.retry_delay_sec,
     )
     try:
         client.connect()

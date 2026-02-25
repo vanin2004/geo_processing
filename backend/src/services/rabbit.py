@@ -1,30 +1,11 @@
 import json
 import logging
-import time
 
 import pika
 
+from src.utils import retry_on_exception
+
 logger = logging.getLogger(__name__)
-
-
-def retry(retries: int = 5, delay_sec: int = 1):
-    """Декоратор для повторного выполнения функции при возникновении исключения."""
-
-    def decorator(func):
-        def wrapper(*args, **kwargs):
-            for attempt in range(retries):
-                try:
-                    return func(*args, **kwargs)
-                except Exception:
-                    if attempt < retries - 1:
-                        logger.warning(f"Error, Retrying in {delay_sec} seconds...")
-                        time.sleep(delay_sec)
-                    else:
-                        raise
-
-        return wrapper
-
-    return decorator
 
 
 class RabbitMQClient:
@@ -39,6 +20,8 @@ class RabbitMQClient:
         heartbeat: int = 60,
         blocked_connection_timeout: int = 30,
         exchange: str = "",
+        retries: int = 5,
+        retry_delay_sec: int = 5,
     ):
         self._host = host
         self._port = port
@@ -51,8 +34,9 @@ class RabbitMQClient:
         self._connection = None
         self._channel = None
         self._exchange = exchange
+        self._retries = retries
+        self._retry_delay_sec = retry_delay_sec
 
-    @retry(retries=5, delay_sec=5)
     def connect(self):
         credentials = pika.PlainCredentials(self._username, self._password)
         parameters = pika.ConnectionParameters(
@@ -63,9 +47,14 @@ class RabbitMQClient:
             heartbeat=self._heartbeat,
             blocked_connection_timeout=self._blocked_connection_timeout,
         )
-        self._connection = pika.BlockingConnection(parameters)
-        self._channel = self._connection.channel()
-        self._channel.queue_declare(queue=self._queue, durable=True)
+
+        @retry_on_exception(retries=self._retries, delay_sec=self._retry_delay_sec)
+        def _connect():
+            self._connection = pika.BlockingConnection(parameters)
+            self._channel = self._connection.channel()
+            self._channel.queue_declare(queue=self._queue, durable=True)
+
+        _connect()
 
     def _consume_decorator(self, callback):
         logger.debug("Callback registered for RabbitMQ consumer")
