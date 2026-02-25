@@ -1,5 +1,6 @@
 from .fastapi import FastAPIConfig
 from .fs import FsConfig
+from .logging import init_logging
 from .pg import PgConfig
 from .rabbit import RabbitConfig
 from .settings import settings
@@ -64,4 +65,5 @@ __all__ = [
     "app_config",
     "rabbit_consumer_config",
     "rabbit_producer_config",
+    "init_logging",
 ]

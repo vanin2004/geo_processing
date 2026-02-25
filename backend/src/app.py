@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from src.config import app_config
+from src.config import app_config, init_logging
 from src.injectors import initialize_database
 from src.routers.api import router
 from src.routers.handlers import (
@@ -14,6 +14,7 @@ from src.routers.handlers import (
 from src.services import FileAlreadyExistsError, TaskNotFoundError
 from src.services import FileNotFoundError as StorageFileNotFoundError
 
+init_logging()
 logger = logging.getLogger(__name__)
 
 

@@ -1,6 +1,9 @@
 import logging
 
+from src.config import init_logging
 from src.injectors import get_rabbit_consumer, get_worker_service, initialize_database
+
+init_logging()
 
 logger = logging.getLogger(__name__)
 
