@@ -3,7 +3,8 @@ from typing import Generator
 
 from src.services import WorkerService
 
-from ..connections import get_db, get_fs
+from ..connections import get_db
+from .fs import get_fs
 
 
 @contextmanager
