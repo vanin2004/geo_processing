@@ -1,0 +1,47 @@
+{
+  "users": [
+    {
+      "name": "admin",
+      "password_hash": "IYVEcAANSEv483wi2X0Xl1QbyCXvzinP+lnDT3v2QwYCDpRL",
+      "tags": "administrator"
+    },
+    {
+      "name": "task_worker",
+      "password_hash": "IYVEcAANSEv483wi2X0Xl1QbyCXvzinP+lnDT3v2QwYCDpRL",
+      "tags": ""
+    },
+        {
+      "name": "task_manager",
+      "password_hash": "IYVEcAANSEv483wi2X0Xl1QbyCXvzinP+lnDT3v2QwYCDpRL",
+      "tags": ""
+    }
+  ],
+  "vhosts": [
+    {
+      "name": "/"
+    }
+  ],
+  "permissions": [
+    {
+      "user": "admin",
+      "vhost": "/",
+      "configure": ".*",
+      "write": ".*",
+      "read": ".*"
+    },
+    {
+      "user": "task_worker",
+      "vhost": "/",
+      "configure": "tasks.*",
+      "write": "",
+      "read": "tasks.*"
+    },
+        {
+      "user": "task_manager",
+      "vhost": "/",
+      "configure": "tasks.*",
+      "write": "tasks.*",
+      "read": ""
+    }
+  ]
+}

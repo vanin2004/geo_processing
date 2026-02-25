@@ -34,7 +34,9 @@ services:
     ports:
       - "15672:15672"
     volumes:
-      - ./volumes/rabbitmq:/var/lib/rabbitmq
+      # - ./volumes/rabbitmq:/var/lib/rabbitmq
+      - ./rabbitmq/.definitions.json:/etc/rabbitmq/.definitions.json:ro
+      - ./rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
     restart: always
 
 
