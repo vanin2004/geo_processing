@@ -46,7 +46,7 @@ def get_task(
             raise HTTPException(status_code=404, detail=str(e))
 
 
-@router.post("/task")
+@router.post("/tasks")
 def create_task(
     body: TaskCreate,
 ) -> TaskRead:
