@@ -217,3 +217,5 @@ volumes/
 example_files/
 
 .definitions.json
+
+.idea/
